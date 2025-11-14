@@ -1,6 +1,6 @@
-# Next.js 15 SaaS Starter
+# Next.js 15 이커머스 쇼핑몰
 
-React 19(App Router) + Prisma + NextAuth.js + shadcn/ui 기반으로 제작된 프로덕션 지향 템플릿입니다. 라우트 그룹, Server Action, React Query, Tailwind CSS v4를 기본 제공하며 대시보드/워크스페이스 예제를 포함합니다.
+React 19(App Router) + Prisma + NextAuth.js + shadcn/ui 기반으로 제작된 완전한 이커머스 쇼핑몰입니다. 상품 관리, 장바구니, 주문, 리뷰, 관리자 대시보드 등 모든 기능을 포함합니다.
 
 ## 빠른 시작
 
@@ -14,10 +14,11 @@ pnpm db:migrate
 pnpm dev
 ```
 
-1. `http://localhost:3000` – 마케팅 랜딩
-2. `http://localhost:3000/sign-in` – GitHub OAuth 또는 Resend Magic Link(환경 변수 필요)로 로그인
-3. `http://localhost:3000/dashboard` – 워크스페이스 생성/목록
-4. `http://localhost:3000/workspaces/[slug]` – 워크스페이스 상세 (권한 체크 포함)
+1. `http://localhost:3000` – 쇼핑몰 홈페이지
+2. `http://localhost:3000/sign-in` – 로그인
+3. `http://localhost:3000/sign-up` – 회원가입
+4. `http://localhost:3000/products` – 상품 목록
+5. `http://localhost:3000/admin/dashboard` – 관리자 대시보드 (ADMIN 권한 필요)
 
 ## 환경 변수
 
@@ -28,70 +29,154 @@ pnpm dev
 | `DATABASE_URL` | Prisma가 연결할 PostgreSQL URL |
 | `NEXTAUTH_SECRET` · `NEXTAUTH_URL` | NextAuth.js 서명/리다이렉션 |
 | `GITHUB_ID`, `GITHUB_SECRET` | GitHub OAuth (선택) |
-| `RESEND_API_KEY`, `EMAIL_FROM` | Resend Magic Link 로그인 (선택) |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Resend 이메일 전송 (선택) |
 
 ## 스크립트
 
 | 명령어 | 설명 |
 | ------ | ---- |
 | `pnpm dev` | Next.js 개발 서버 |
-| `pnpm lint` | ESLint (Flat config + Next.js + React Hooks) |
-| `pnpm typecheck` | TypeScript `--noEmit` 검사 |
+| `pnpm build` | 프로덕션 빌드 |
+| `pnpm start` | 프로덕션 서버 실행 |
+| `pnpm lint` | ESLint 검사 |
+| `pnpm typecheck` | TypeScript 타입 검사 |
 | `pnpm db:generate` | Prisma Client 생성 |
-| `pnpm db:migrate` | `prisma migrate dev` – 개발 DB 마이그레이션 |
+| `pnpm db:migrate` | 데이터베이스 마이그레이션 |
 | `pnpm db:push` | 스키마를 DB에 강제 반영 |
 | `pnpm db:studio` | Prisma Studio GUI |
-| `pnpm storybook` | Storybook 8 개발 서버 (`http://localhost:6006`) |
-| `pnpm storybook:build` | 정적 Storybook 빌드(`storybook-static/`) |
+| `pnpm storybook` | Storybook 개발 서버 (`http://localhost:6006`) |
+| `pnpm storybook:build` | 정적 Storybook 빌드 |
+| `pnpm test` | Vitest 단위 테스트 |
+| `pnpm test:e2e` | Playwright E2E 테스트 |
+
+## 주요 기능
+
+### 쇼핑 영역
+- **홈페이지**: 인기 상품, 카테고리 목록
+- **상품 목록**: 필터, 검색, 정렬 기능
+- **상품 상세**: 이미지, 설명, 리뷰, 장바구니 추가
+- **카테고리**: 카테고리별 상품 목록
+- **검색**: 상품명 및 설명 검색
+
+### 사용자 영역
+- **대시보드**: 장바구니 요약, 최근 주문
+- **장바구니**: 상품 추가/수정/삭제, 주문하기
+- **주문 내역**: 주문 목록 및 상세 정보
+- **프로필**: 계정 정보 및 배송지 관리
+- **설정**: 테마, 알림 설정
+
+### 관리자 영역
+- **대시보드**: 통계, 최근 주문
+- **상품 관리**: 상품 등록, 수정, 삭제
+- **주문 관리**: 주문 상태 변경, 필터
+- **카테고리 관리**: 카테고리 등록, 수정, 삭제
+- **리뷰 관리**: 고객 리뷰 확인
+
+## 데이터 모델
+
+### 주요 모델
+- **User**: 사용자 (CUSTOMER/ADMIN 역할)
+- **Product**: 상품 (이름, 가격, 재고, 이미지 등)
+- **Category**: 카테고리 (계층 구조 지원)
+- **Cart**: 장바구니
+- **CartItem**: 장바구니 항목
+- **Order**: 주문
+- **OrderItem**: 주문 항목
+- **Review**: 리뷰 (평점, 댓글)
+- **Address**: 배송지
 
 ## 라우트 구조
 
 ```
 app/
-├─ (marketing)/page.tsx     # 랜딩 페이지
-├─ (auth)/sign-in/page.tsx  # 인증 진입점
-├─ (app)/layout.tsx         # 인증된 사용자 레이아웃
-│  ├─ dashboard/page.tsx    # 워크스페이스 생성/목록
-│  └─ workspaces/[slug]/page.tsx
-└─ api/auth/[...nextauth]/route.ts # NextAuth 핸들러
+├─ (shop)/                    # 쇼핑 영역
+│  ├─ page.tsx               # 홈페이지
+│  ├─ products/              # 상품 목록/상세
+│  ├─ categories/[slug]/     # 카테고리별 상품
+│  └─ search/                # 검색 결과
+├─ (app)/                     # 사용자 영역
+│  ├─ dashboard/             # 대시보드
+│  ├─ cart/                  # 장바구니
+│  ├─ orders/                # 주문 내역
+│  ├─ profile/               # 프로필
+│  └─ settings/              # 설정
+├─ (admin)/                   # 관리자 영역
+│  ├─ dashboard/             # 관리자 대시보드
+│  ├─ products/              # 상품 관리
+│  ├─ orders/                # 주문 관리
+│  ├─ categories/            # 카테고리 관리
+│  └─ reviews/               # 리뷰 관리
+└─ (auth)/                    # 인증
+   ├─ sign-in/               # 로그인
+   ├─ sign-up/               # 회원가입
+   ├─ forgot-password/       # 비밀번호 찾기
+   └─ reset-password/        # 비밀번호 재설정
 ```
 
-- 공유 Provider(`AppProviders`)에서 NextAuth Session과 React Query Client를 초기화합니다.
-- `(app)` 레이아웃은 `auth()` 호출로 세션을 확인 후, 미로그인의 경우 `/sign-in` 으로 리다이렉션합니다.
+## 기술 스택
 
-## 데이터 / 인증 레이어
+- **Next.js 15**: App Router, Server Components, Server Actions
+- **React 19**: 최신 React 기능
+- **Prisma**: ORM 및 데이터베이스 관리
+- **NextAuth.js v5**: 인증 및 세션 관리
+- **shadcn/ui**: UI 컴포넌트 라이브러리
+- **Tailwind CSS v4**: 스타일링
+- **TypeScript**: 타입 안정성
+- **Zod**: 스키마 검증
+- **Vitest**: 단위 테스트
+- **Playwright**: E2E 테스트
+- **Storybook**: UI 컴포넌트 문서화
 
-- **Prisma**: `prisma/schema.prisma` 에서 `User`, `Workspace`, `WorkspaceMember` 모델과 `UserRole`, `WorkspaceRole` 열거형을 정의했습니다.
-- **서버 액션**: `src/server/actions/workspaces.ts`에서 Zod 검증 + Server Action으로 워크스페이스 생성, `revalidatePath`로 캐시 무효화.
-- **데이터 서비스**: `src/server/data/workspaces.ts` 에서 `cache()`와 Prisma를 조합해 세션에 따른 데이터 fetch를 제공합니다.
-- **NextAuth.js v5**: GitHub OAuth 및 Resend 이메일 Magic Link를 지원하며 `Session` 타입 확장을 통해 `user.id`, `user.role`을 노출합니다.
-- **React Query**: `QueryProvider`에서 기본 `staleTime`과 Devtools를 설정합니다. 클라이언트 폼(`CreateWorkspaceForm`)은 `useActionState`와 함께 optimistic UX를 제공합니다.
+## 관리자 계정 생성
 
-## UI / 스타일
+1. 일반 회원가입으로 계정 생성
+2. Prisma Studio 실행: `pnpm db:studio`
+3. User 테이블에서 해당 사용자의 `role`을 `ADMIN`으로 변경
+4. 또는 데이터베이스에서 직접 수정:
+   ```sql
+   UPDATE "User" SET role = 'ADMIN' WHERE email = 'your-email@example.com';
+   ```
 
-- Tailwind CSS v4 + PostCSS + Autoprefixer. 색상/타이포 변수는 `src/app/globals.css`에서 정의합니다.
-- `pnpm dlx shadcn@latest` 로 생성된 컴포넌트는 `src/components/ui`에 보관하며, 상태 폼과 UX 컴포넌트는 `src/components/forms`, `src/components/providers`에 위치합니다.
-- 대시보드와 워크스페이스 상세에서 shadcn/ui Card, Badge, Tooltip 등을 활용한 레이아웃 샘플을 제공합니다.
+## 배송비 정책
 
-## Storybook
+- 50,000원 이상 구매 시 무료배송
+- 미만 시 3,000원 배송비
 
-- **Storybook 8.6.14** (`@storybook/experimental-nextjs-vite`) 설정이 `.storybook/`에 구성되어 있습니다.
-- Next.js 15 + App Router와 완벽 호환되며, Vite 기반으로 빠른 HMR과 개발 경험을 제공합니다.
-- `@` 경로 별칭, 전역 CSS(`src/app/globals.css`) 자동 적용, Tailwind CSS v4 지원.
-- 샘플 스토리: `src/stories/button.stories.tsx`, `src/stories/card.stories.tsx`, `src/stories/metric-card.stories.tsx`, `src/stories/activity-list.stories.tsx`.
-- UI 컴포넌트와 대시보드 컴포넌트의 다양한 상태와 변형을 시각적으로 확인하고 문서화할 수 있습니다.
-- 실행: `pnpm storybook` (`http://localhost:6006`), 정적 빌드: `pnpm storybook:build`.
+## 주문 상태
+
+- **PENDING**: 대기 중
+- **CONFIRMED**: 확인됨
+- **PROCESSING**: 처리 중
+- **SHIPPED**: 배송 중
+- **DELIVERED**: 배송 완료
+- **CANCELLED**: 취소됨
+- **REFUNDED**: 환불됨
+
+## 개발 가이드
+
+### 서버 액션
+서버 액션은 `src/server/actions/` 디렉토리에 위치하며, 폼 제출 및 데이터 변경을 처리합니다.
+
+### 데이터 페칭
+데이터 페칭 함수는 `src/server/data/` 디렉토리에 위치하며, `cache()`를 사용하여 중복 요청을 방지합니다.
+
+### 컴포넌트 구조
+- `src/components/products/`: 상품 관련 컴포넌트
+- `src/components/cart/`: 장바구니 관련 컴포넌트
+- `src/components/orders/`: 주문 관련 컴포넌트
+- `src/components/reviews/`: 리뷰 관련 컴포넌트
+- `src/components/admin/`: 관리자 관련 컴포넌트
+- `src/components/ui/`: shadcn/ui 기본 컴포넌트
 
 ## 품질 & 확장 아이디어
 
-- **테스트/CI**: Vitest 2.1.9 단위 테스트(`pnpm test`), Playwright 스모크 시나리오(`pnpm test:e2e`), Storybook 8 인터랙티브 문서로 구성되어 있습니다. CI에서는 `pnpm lint && pnpm typecheck && pnpm test && pnpm test:e2e && pnpm storybook:build` 조합을 권장합니다.
-- **관측/로깅**: Sentry, PostHog, OpenTelemetry 연결과 README 업데이트는 `observability-docs` 작업에서 진행합니다.
-- **도메인 확장**: 결제(Stripe Billing), 스토리지(UploadThing), 에디터(Tiptap) 등은 Prisma 모델과 Route Handler를 확장하여 통합할 수 있습니다.
-- **보안**: `next-safe-middleware`로 CSP/HSTS 설정, `middleware.ts`로 접근 제어, 서버 액션에서 권한 체크를 강화해주세요.
+- **테스트/CI**: Vitest 단위 테스트, Playwright E2E 테스트, Storybook 문서화
+- **결제**: Stripe, Toss Payments 등 결제 게이트웨이 연동
+- **이미지 업로드**: UploadThing, Cloudinary 등 이미지 호스팅 서비스 연동
+- **검색**: Algolia, Elasticsearch 등 전문 검색 엔진 연동
+- **관측/로깅**: Sentry, PostHog 등 모니터링 도구 연동
+- **보안**: CSP/HSTS 설정, rate limiting, CSRF 보호 강화
 
-## 참고
+## 라이선스
 
-- [Next.js 15 App Router](https://nextjs.org/docs/app)
-- [Auth.js (NextAuth.js v5)](https://authjs.dev/)
-- [Prisma ORM](https://www.prisma.io/docs)
-- [shadcn/ui](https://ui.shadcn.com)
+MIT

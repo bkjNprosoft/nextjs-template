@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Sidebar, SidebarMobile } from "@/components/navigation/sidebar";
-import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
 import { cn } from "@/lib/utils";
 
 type AppLayoutProps = {
@@ -37,14 +36,13 @@ export default async function AppLayout({ children }: AppLayoutProps) {
           <div className="flex items-center gap-4">
             <SidebarMobile />
             <Link
-              href="/dashboard"
+              href="/"
               className="text-sm font-semibold text-foreground transition hover:text-primary"
             >
-              Dashboard
+              쇼핑몰
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <NotificationDropdown />
             <div className="hidden items-center gap-2 sm:flex">
               <span className="text-sm font-medium text-muted-foreground">
                 Signed in as
@@ -55,7 +53,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
                 </span>
                 <div className="flex flex-col leading-tight">
                   <span className="text-sm font-semibold">
-                    {session.user.name ?? "Workspace member"}
+                    {session.user.name ?? "고객"}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {session.user.email}

@@ -126,7 +126,7 @@ const authConfig: NextAuthConfigType = {
       if (user) {
         token.role =
           ((user as ExtendedUser).role as UserRole | undefined) ??
-          UserRole.MEMBER;
+          UserRole.CUSTOMER;
       }
 
       return token;
@@ -139,7 +139,7 @@ const authConfig: NextAuthConfigType = {
       const roleFromToken =
         (token?.role as UserRole | undefined) ??
         (user?.role as UserRole | undefined) ??
-        UserRole.MEMBER;
+        UserRole.CUSTOMER;
 
       const userId =
         (typeof user?.id === "string" ? user.id : undefined) ??

@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,6 +10,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================
+// 인증 관련 모델 (NextAuth.js)
+// ============================================
+
 model User {
   id             String            @id @default(cuid())
   name           String?
@@ -20,15 +21,14 @@ model User {
   emailVerified  DateTime?
   image          String?
   passwordHash   String?
-  role           UserRole          @default(MEMBER)
+  role           UserRole          @default(CUSTOMER)
   accounts       Account[]
   sessions       Session[]
-  memberships    WorkspaceMember[]
-  ownedWorkspaces Workspace[]      @relation("workspaceOwner")
-  ownedProjects  Project[]         @relation("projectOwner")
-  projectComments ProjectComment[] @relation("commentAuthor")
+  cart           Cart?
+  orders         Order[]
+  reviews        Review[]
+  addresses      Address[]
   preferences    UserPreference?
-  notifications  Notification[]
   passwordResetTokens PasswordResetToken[]
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -88,85 +88,146 @@ model PasswordResetToken {
   @@index([userId])
 }
 
-model Workspace {
-  id          String            @id @default(cuid())
+// ============================================
+// 이커머스 모델
+// ============================================
+
+model Category {
+  id          String     @id @default(cuid())
   name        String
-  slug        String            @unique
-  ownerId     String
-  owner       User              @relation("workspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members     WorkspaceMember[]
-  projects    Project[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  slug        String     @unique
+  description String?
+  image       String?
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryTree")
+  products    Product[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([slug])
+  @@index([parentId])
 }
 
-model WorkspaceMember {
-  id          String         @id @default(cuid())
-  workspaceId String
-  userId      String
-  role        WorkspaceRole  @default(MEMBER)
-  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?     @db.Text
+  price       Decimal     @db.Decimal(10, 2)
+  compareAtPrice Decimal? @db.Decimal(10, 2)
+  sku         String?     @unique
+  stock       Int         @default(0)
+  images      String[]    // 이미지 URL 배열
+  categoryId  String?
+  category    Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  featured    Boolean     @default(false)
+  active      Boolean     @default(true)
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  reviews     Review[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  @@unique([workspaceId, userId])
+  @@index([slug])
+  @@index([categoryId])
+  @@index([active, featured])
+  @@index([stock])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status        OrderStatus @default(PENDING)
+  totalAmount   Decimal     @db.Decimal(10, 2)
+  shippingAddressId String
+  shippingAddress Address   @relation("OrderShippingAddress", fields: [shippingAddressId], references: [id])
+  items         OrderItem[]
+  notes         String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
   @@index([userId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
 }
 
-enum UserRole {
-  MEMBER
-  ADMIN
-  OWNER
-}
-
-enum WorkspaceRole {
-  OWNER
-  ADMIN
-  MEMBER
-}
-
-model Project {
-  id          String           @id @default(cuid())
-  title       String
-  summary     String?
-  status      ProjectStatus    @default(BACKLOG)
-  priority    ProjectPriority  @default(MEDIUM)
-  dueDate     DateTime?
-  workspaceId String
-  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  ownerId     String
-  owner       User             @relation("projectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  tags        ProjectTag[]
-  comments    ProjectComment[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-
-  @@index([workspaceId, status])
-}
-
-model ProjectTag {
+model OrderItem {
   id        String   @id @default(cuid())
-  projectId String
-  value     String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Decimal  @db.Decimal(10, 2) // 주문 시점의 가격
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int      // 1-5
+  title     String?
+  comment   String?  @db.Text
+  verified  Boolean  @default(false) // 주문 확인 여부
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([projectId, value])
+  @@unique([productId, userId])
+  @@index([productId])
+  @@index([userId])
+  @@index([rating])
 }
 
-model ProjectComment {
-  id        String   @id @default(cuid())
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  authorId  String
-  author    User     @relation("commentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  body      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String   // 수령인 이름
+  phone       String
+  addressLine1 String
+  addressLine2 String?
+  city        String
+  state       String?
+  postalCode  String
+  country     String   @default("KR")
+  isDefault   Boolean  @default(false)
+  orders      Order[]  @relation("OrderShippingAddress")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@index([projectId])
+  @@index([userId])
 }
 
 model UserPreference {
@@ -174,49 +235,32 @@ model UserPreference {
   userId             String          @unique
   user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   theme              ThemePreference @default(SYSTEM)
-  emailProductUpdates Boolean        @default(true)
-  emailSecurity      Boolean         @default(true)
-  inAppAlerts        Boolean         @default(true)
+  emailNotifications Boolean         @default(true)
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 }
 
-model Notification {
-  id        String                @id @default(cuid())
-  userId    String
-  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  body      String
-  category  NotificationCategory  @default(SYSTEM)
-  read      Boolean               @default(false)
-  createdAt DateTime              @default(now())
+// ============================================
+// 열거형
+// ============================================
 
-  @@index([userId, read])
+enum UserRole {
+  CUSTOMER
+  ADMIN
 }
 
-enum NotificationCategory {
-  SYSTEM
-  PROJECT
-  COMMENT
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
 }
 
 enum ThemePreference {
   SYSTEM
   LIGHT
   DARK
-}
-
-enum ProjectStatus {
-  BACKLOG
-  IN_PROGRESS
-  REVIEW
-  BLOCKED
-  SHIPPED
-}
-
-enum ProjectPriority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
 }

@@ -5,9 +5,8 @@ import { UserRole } from "@prisma/client";
 import { auth } from "@/lib/auth";
 
 const ROLE_PRIORITY: Record<UserRole, number> = {
-  [UserRole.MEMBER]: 1,
+  [UserRole.CUSTOMER]: 1,
   [UserRole.ADMIN]: 2,
-  [UserRole.OWNER]: 3,
 };
 
 type RoleRequirement = UserRole | ReadonlyArray<UserRole> | Set<UserRole>;

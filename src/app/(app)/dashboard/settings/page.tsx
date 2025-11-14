@@ -36,8 +36,15 @@ export default async function SettingsPage() {
     redirect("/sign-in");
   }
 
-  const preferences =
-    (await getUserPreferences(session.user.id)) ?? DEFAULT_PREFERENCES;
+  const userPrefs = await getUserPreferences(session.user.id);
+  const preferences = userPrefs
+    ? {
+        theme: userPrefs.theme,
+        emailProductUpdates: userPrefs.emailNotifications ?? true,
+        emailSecurity: userPrefs.emailNotifications ?? true,
+        inAppAlerts: true,
+      }
+    : DEFAULT_PREFERENCES;
 
   return (
     <div className="space-y-6">
@@ -57,7 +64,10 @@ export default async function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={updateUserPreferencesAction} className="space-y-6">
+            <form action={async (formData: FormData) => {
+              "use server";
+              await updateUserPreferencesAction(formData);
+            }} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="displayName">표시 이름</Label>
                 <Input

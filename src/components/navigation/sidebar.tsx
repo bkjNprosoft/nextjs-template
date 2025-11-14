@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Settings,
-  Bell,
-  FolderKanban,
+  ShoppingCart,
+  Package,
+  User,
   Menu,
 } from "lucide-react";
 
@@ -16,23 +17,28 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navigation = [
   {
-    name: "Dashboard",
+    name: "대시보드",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    name: "Workspaces",
-    href: "/dashboard",
-    icon: FolderKanban,
+    name: "장바구니",
+    href: "/cart",
+    icon: ShoppingCart,
   },
   {
-    name: "Notifications",
-    href: "/dashboard/notifications",
-    icon: Bell,
+    name: "주문 내역",
+    href: "/orders",
+    icon: Package,
   },
   {
-    name: "Settings",
-    href: "/dashboard/settings",
+    name: "프로필",
+    href: "/profile",
+    icon: User,
+  },
+  {
+    name: "설정",
+    href: "/settings",
     icon: Settings,
   },
 ];
