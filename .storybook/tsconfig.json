@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["storybook__react"],
+    "jsx": "react-jsx"
+  },
+  "include": ["../src", "./*.ts", "./*.tsx"]
+}
+
