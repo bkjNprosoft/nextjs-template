@@ -63,7 +63,7 @@ export function SettingsForm({ preferences }: SettingsFormProps) {
         setTimeout(() => setSuccess(false), 3000);
       } else {
         const errorMessage =
-          result.errors._general?.[0] ||
+          (result.errors as { _general?: string[] })._general?.[0] ||
           Object.values(result.errors).flat()[0] ||
           "설정 저장에 실패했습니다.";
         setError(errorMessage);

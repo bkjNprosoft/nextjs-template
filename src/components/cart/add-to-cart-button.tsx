@@ -33,9 +33,10 @@ export function AddToCartButton({
       const result = await addToCartAction(formData);
 
       if (!result.success) {
+        const errors = result.errors as { _general?: string[]; productId?: string[] };
         const errorMessage =
-          result.errors._general?.[0] ||
-          result.errors.productId?.[0] ||
+          errors._general?.[0] ||
+          errors.productId?.[0] ||
           "장바구니 추가에 실패했습니다.";
         setError(errorMessage);
       }

@@ -53,7 +53,7 @@ export function OrderStatusForm({
         router.refresh();
       } else {
         const errorMessage =
-          result.errors._general?.[0] ||
+          (result.errors as { _general?: string[] })._general?.[0] ||
           "주문 상태 업데이트에 실패했습니다.";
         setError(errorMessage);
       }

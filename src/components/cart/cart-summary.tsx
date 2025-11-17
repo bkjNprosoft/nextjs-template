@@ -1,6 +1,3 @@
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getDefaultAddress, getAddresses } from "@/server/data/addresses";
@@ -9,19 +6,9 @@ import { CheckoutButton } from "@/components/orders/checkout-button";
 
 type CartSummaryProps = {
   total: number;
-  cartItems: Array<{
-    id: string;
-    quantity: number;
-    product: {
-      id: string;
-      name: string;
-      price: number | { toString(): string; toNumber(): number };
-      stock: number;
-    };
-  }>;
 };
 
-export async function CartSummary({ total, cartItems }: CartSummaryProps) {
+export async function CartSummary({ total }: CartSummaryProps) {
   const user = await requireUser();
   const [defaultAddress, addresses] = await Promise.all([
     getDefaultAddress(user.id),

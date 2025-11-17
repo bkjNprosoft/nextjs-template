@@ -26,11 +26,11 @@ const signUpSchema = z
     path: ["confirmPassword"],
   });
 
-function redirectWithError(message: string): never {
-  redirect(`/sign-up?error=${encodeURIComponent(message)}`);
-}
+export type RegisterResult =
+  | { success: true }
+  | { success: false; error: string };
 
-export async function registerUser(formData: FormData) {
+export async function registerUser(formData: FormData): Promise<RegisterResult> {
   const parsed = signUpSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -40,7 +40,10 @@ export async function registerUser(formData: FormData) {
 
   if (!parsed.success) {
     const firstIssue = parsed.error.issues[0];
-    redirectWithError(firstIssue?.message ?? "입력값을 확인해 주세요.");
+    return {
+      success: false,
+      error: firstIssue?.message ?? "입력값을 확인해 주세요.",
+    };
   }
 
   const { name, email, password } = parsed.data;
@@ -51,7 +54,10 @@ export async function registerUser(formData: FormData) {
   });
 
   if (existingUser) {
-    redirectWithError("이미 가입된 이메일입니다.");
+    return {
+      success: false,
+      error: "이미 가입된 이메일입니다.",
+    };
   }
 
   const passwordHash = await hashPassword(password);
@@ -70,6 +76,7 @@ export async function registerUser(formData: FormData) {
       password,
       redirectTo: "/dashboard",
     });
+    return { success: true };
   } catch (error) {
     if (error instanceof AuthError && error.type === "CredentialsSignin") {
       redirect(

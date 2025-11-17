@@ -40,9 +40,10 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         setOpen(false);
         setRating(5);
       } else {
+        const errors = result.errors as { _general?: string[]; rating?: string[] };
         const errorMessage =
-          result.errors._general?.[0] ||
-          result.errors.rating?.[0] ||
+          errors._general?.[0] ||
+          errors.rating?.[0] ||
           "리뷰 작성에 실패했습니다.";
         setError(errorMessage);
       }

@@ -49,9 +49,10 @@ export function CheckoutButton({
       if (result.success && result.orderId) {
         router.push(`/orders/${result.orderId}`);
       } else {
+        const errors = result.errors as { _general?: string[]; shippingAddressId?: string[] };
         const errorMessage =
-          result.errors._general?.[0] ||
-          result.errors.shippingAddressId?.[0] ||
+          errors._general?.[0] ||
+          errors.shippingAddressId?.[0] ||
           "주문 생성에 실패했습니다.";
         setError(errorMessage);
       }

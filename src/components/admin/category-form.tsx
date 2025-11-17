@@ -80,7 +80,7 @@ export function CategoryForm({ category, categories }: CategoryFormProps) {
           router.push("/admin/categories");
         } else {
           const errorMessage =
-            result.errors._general?.[0] ||
+            (result.errors as { _general?: string[] })._general?.[0] ||
             Object.values(result.errors).flat()[0] ||
             "카테고리 수정에 실패했습니다.";
           setError(errorMessage);
@@ -91,7 +91,7 @@ export function CategoryForm({ category, categories }: CategoryFormProps) {
           router.push("/admin/categories");
         } else {
           const errorMessage =
-            result.errors._general?.[0] ||
+            (result.errors as { _general?: string[] })._general?.[0] ||
             Object.values(result.errors).flat()[0] ||
             "카테고리 추가에 실패했습니다.";
           setError(errorMessage);
@@ -115,7 +115,7 @@ export function CategoryForm({ category, categories }: CategoryFormProps) {
         router.push("/admin/categories");
       } else {
         const errorMessage =
-          result.errors._general?.[0] || "카테고리 삭제에 실패했습니다.";
+          (result.errors as { _general?: string[] })._general?.[0] || "카테고리 삭제에 실패했습니다.";
         setError(errorMessage);
       }
     });

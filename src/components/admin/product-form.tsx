@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -44,8 +43,8 @@ const productSchema = z.object({
   sku: z.string().optional(),
   stock: z.number().int().min(0),
   categoryId: z.string().optional(),
-  featured: z.boolean().default(false),
-  active: z.boolean().default(true),
+  featured: z.boolean(),
+  active: z.boolean(),
   images: z.array(z.string().url()).min(1, "최소 1개의 이미지가 필요합니다"),
 });
 
@@ -111,7 +110,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           router.push("/admin/products");
         } else {
           const errorMessage =
-            result.errors._general?.[0] ||
+            (result.errors as { _general?: string[] })._general?.[0] ||
             Object.values(result.errors).flat()[0] ||
             "상품 수정에 실패했습니다.";
           setError(errorMessage);
@@ -122,7 +121,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           router.push("/admin/products");
         } else {
           const errorMessage =
-            result.errors._general?.[0] ||
+            (result.errors as { _general?: string[] })._general?.[0] ||
             Object.values(result.errors).flat()[0] ||
             "상품 등록에 실패했습니다.";
           setError(errorMessage);
@@ -146,7 +145,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         router.push("/admin/products");
       } else {
         const errorMessage =
-          result.errors._general?.[0] || "상품 삭제에 실패했습니다.";
+          (result.errors as { _general?: string[] })._general?.[0] || "상품 삭제에 실패했습니다.";
         setError(errorMessage);
       }
     });

@@ -80,8 +80,8 @@ export const getOrderByNumber = cache(
             },
           },
         },
+        shippingAddress: true,
       },
-      shippingAddress: true,
     });
   },
 );

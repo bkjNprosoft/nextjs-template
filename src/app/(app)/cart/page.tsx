@@ -127,7 +127,7 @@ export default async function CartPage() {
           </CardContent>
         </Card>
 
-        <CartSummary total={total} cartItems={cart.items} />
+        <CartSummary total={total} />
       </div>
     </div>
   );

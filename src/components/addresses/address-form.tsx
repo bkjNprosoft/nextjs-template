@@ -22,7 +22,7 @@ export function AddressForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     setError(null);
     startTransition(async () => {
       const result = await createAddressAction(formData);

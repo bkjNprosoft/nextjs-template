@@ -12,6 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +33,7 @@ export function AddressList({ addresses }: AddressListProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const handleUpdate = async (formData: FormData) => {
+  const handleUpdate = (formData: FormData) => {
     setError(null);
     startTransition(async () => {
       const result = await updateAddressAction(formData);
@@ -41,7 +42,7 @@ export function AddressList({ addresses }: AddressListProps) {
         setEditingId(null);
       } else {
         const errorMessage =
-          result.errors._general?.[0] ||
+          (result.errors as { _general?: string[] })._general?.[0] ||
           Object.values(result.errors).flat()[0] ||
           "배송지 수정에 실패했습니다.";
         setError(errorMessage);
@@ -49,7 +50,7 @@ export function AddressList({ addresses }: AddressListProps) {
     });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("정말 이 배송지를 삭제하시겠습니까?")) {
       return;
     }
@@ -63,7 +64,8 @@ export function AddressList({ addresses }: AddressListProps) {
 
       if (!result.success) {
         const errorMessage =
-          result.errors._general?.[0] || "배송지 삭제에 실패했습니다.";
+          (result.errors as { _general?: string[] })._general?.[0] ||
+          "배송지 삭제에 실패했습니다.";
         setError(errorMessage);
       }
     });
@@ -71,30 +73,22 @@ export function AddressList({ addresses }: AddressListProps) {
 
   if (addresses.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
-        등록된 배송지가 없습니다.
-      </p>
+      <p className="text-sm text-muted-foreground">등록된 배송지가 없습니다.</p>
     );
   }
 
   return (
     <div className="space-y-4">
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       {addresses.map((address) => (
         <div key={address.id} className="space-y-2">
           <div className="flex items-start justify-between rounded-lg border p-4">
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
                 <p className="font-semibold">{address.name}</p>
-                {address.isDefault && (
-                  <Badge variant="secondary">기본</Badge>
-                )}
+                {address.isDefault && <Badge variant="secondary">기본</Badge>}
               </div>
-              <p className="text-sm text-muted-foreground">
-                {address.phone}
-              </p>
+              <p className="text-sm text-muted-foreground">{address.phone}</p>
               <p className="text-sm">
                 {address.addressLine1}
                 {address.addressLine2 && (
@@ -249,7 +243,9 @@ export function AddressList({ addresses }: AddressListProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleDelete(address.id)}
+                onClick={() => {
+                  void handleDelete(address.id);
+                }}
                 className="text-destructive"
               >
                 <Trash2 className="h-4 w-4" />
@@ -262,4 +258,3 @@ export function AddressList({ addresses }: AddressListProps) {
     </div>
   );
 }
-

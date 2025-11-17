@@ -1,6 +1,7 @@
 "use server";
 
 import { OrderStatus } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -58,7 +59,11 @@ export async function createOrderAction(formData: FormData) {
 
     // 재고 확인 및 총액 계산
     let totalAmount = 0;
-    const orderItems = [];
+    const orderItems: Array<{
+      productId: string;
+      quantity: number;
+      price: Decimal;
+    }> = [];
 
     for (const item of cart.items) {
       const product = await prisma.product.findUnique({
