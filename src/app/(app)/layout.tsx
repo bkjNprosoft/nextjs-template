@@ -2,10 +2,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { auth, signOut } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { Sidebar, SidebarMobile } from "@/components/navigation/sidebar";
-import { cn } from "@/lib/utils";
+import { auth, signOut } from "@/shared/lib/auth";
+import { Button } from "@/shared/ui/atoms/button";
+import { Sidebar, SidebarMobile } from "@/widgets/sidebar";
+import { cn } from "@/shared/lib/utils";
 
 type AppLayoutProps = {
   children: ReactNode;

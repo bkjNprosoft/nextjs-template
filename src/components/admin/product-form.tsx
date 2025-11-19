@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Form,
   FormControl,
@@ -14,22 +14,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/shared/ui/molecules/form";
+import { Input } from "@/shared/ui/atoms/input";
+import { Textarea } from "@/shared/ui/atoms/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/shared/ui/molecules/select";
+import { Checkbox } from "@/shared/ui/atoms/checkbox";
 import {
   createProductAction,
   updateProductAction,
   deleteProductAction,
-} from "@/server/actions/products";
+} from "@/entities/product/api/actions";
 import type { Product, Category } from "@prisma/client";
 
 const productSchema = z.object({
@@ -77,7 +77,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof productSchema>) => {
+  const onSubmit = (values: z.infer<typeof productSchema>) => {
     setError(null);
     startTransition(async () => {
       const formData = new FormData();
@@ -130,7 +130,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     });
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!product || !confirm("정말 이 상품을 삭제하시겠습니까?")) {
       return;
     }
@@ -153,7 +153,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit(onSubmit)(e); }} className="space-y-6">
         <FormField
           control={form.control}
           name="name"

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Form,
   FormControl,
@@ -14,16 +14,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/shared/ui/molecules/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { updateUserPreferencesAction } from "@/server/actions/notifications";
+} from "@/shared/ui/molecules/select";
+import { Switch } from "@/shared/ui/atoms/switch";
+import { updateUserPreferencesAction } from "@/entities/user/api/actions";
 import type { UserPreference, ThemePreference } from "@prisma/client";
 
 const settingsSchema = z.object({
@@ -48,7 +48,7 @@ export function SettingsForm({ preferences }: SettingsFormProps) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof settingsSchema>) => {
+  const onSubmit = (values: z.infer<typeof settingsSchema>) => {
     setError(null);
     setSuccess(false);
     startTransition(async () => {
@@ -73,7 +73,7 @@ export function SettingsForm({ preferences }: SettingsFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit(onSubmit)(e); }} className="space-y-6">
         <FormField
           control={form.control}
           name="theme"

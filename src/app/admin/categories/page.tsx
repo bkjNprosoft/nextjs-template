@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/shared/ui/molecules/card";
 import { Plus } from "lucide-react";
-import { getCategories } from "@/server/data/categories";
+import { getCategories } from "@/entities/category/api/data";
 
 export default async function AdminCategoriesPage() {
   const categories = await getCategories();

@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 
-import { ProductList } from "@/components/products/product-list";
-import { ProductFilter } from "@/components/products/product-filter";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getProducts } from "@/server/data/products";
+import { ProductList } from "@/widgets/product-list";
+import { ProductFilter } from "@/entities/product/ui/product-filter";
+import { Skeleton } from "@/shared/ui/atoms/skeleton";
+import { getProducts } from "@/entities/product/api/data";
+import { auth } from "@/shared/lib/auth";
+import { getWishlistProductIds } from "@/entities/wishlist/api/data";
 
 type ProductsPageProps = {
   searchParams: Promise<{
@@ -12,6 +14,10 @@ type ProductsPageProps = {
     featured?: string;
     orderBy?: string;
     page?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    inStock?: string;
+    onSale?: string;
   }>;
 };
 
@@ -36,52 +42,75 @@ export default async function ProductsPage({
   const page = Number(params.page) || 1;
   const take = 20;
   const skip = (page - 1) * take;
+  const session = await auth();
 
-  const { products, total } = await getProducts({
-    categoryId: params.category,
-    search: params.search,
-    featured: params.featured === "true",
-    orderBy:
-      params.orderBy === "price_asc"
-        ? "price_asc"
-        : params.orderBy === "price_desc"
-          ? "price_desc"
-          : params.orderBy === "name_asc"
-            ? "name_asc"
-            : "created_desc",
-    skip,
-    take,
-  });
+  const [productsData, wishlistIds] = await Promise.all([
+    getProducts({
+      categoryId: params.category,
+      search: params.search,
+      featured: params.featured === "true",
+      orderBy:
+        params.orderBy === "price_asc"
+          ? "price_asc"
+          : params.orderBy === "price_desc"
+            ? "price_desc"
+            : params.orderBy === "name_asc"
+              ? "name_asc"
+              : params.orderBy === "popular"
+                ? "popular"
+                : params.orderBy === "rating"
+                  ? "rating"
+                  : params.orderBy === "reviews"
+                    ? "reviews"
+                    : "created_desc",
+      minPrice: params.minPrice ? Number(params.minPrice) : undefined,
+      maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
+      inStock: params.inStock === "true",
+      onSale: params.onSale === "true",
+      skip,
+      take,
+    }),
+    session?.user ? getWishlistProductIds(session.user.id) : Promise.resolve([]),
+  ]);
 
+  const { products, total } = productsData;
   const totalPages = Math.ceil(total / take);
 
   return (
     <div className="container space-y-8 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">상품</h1>
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold">상품</h1>
         <p className="text-muted-foreground">
-          총 {total}개의 상품
+          총 <span className="font-semibold text-primary">{total}</span>개의 상품
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         <aside className="hidden lg:block">
-          <Suspense fallback={<Skeleton className="h-96" />}>
-            <ProductFilter />
-          </Suspense>
+          <div className="sticky top-24">
+            <Suspense fallback={<Skeleton className="h-96 rounded-lg" />}>
+              <div className="rounded-lg border bg-white p-4 shadow-sm">
+                <ProductFilter searchParams={params} />
+              </div>
+            </Suspense>
+          </div>
         </aside>
         <div className="space-y-6">
           <Suspense fallback={<ProductListSkeleton />}>
-            <ProductList products={products} />
+            <ProductList products={products} wishlistProductIds={wishlistIds} />
           </Suspense>
           {totalPages > 1 && (
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-2 pt-4">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                 (pageNum) => (
                   <a
                     key={pageNum}
-                    href={`?page=${pageNum}${params.category ? `&category=${params.category}` : ""}${params.search ? `&search=${params.search}` : ""}`}
-                    className="rounded-md border px-3 py-2 hover:bg-accent"
+                    href={`?page=${pageNum}${params.category ? `&category=${params.category}` : ""}${params.search ? `&search=${params.search}` : ""}${params.orderBy ? `&orderBy=${params.orderBy}` : ""}${params.minPrice ? `&minPrice=${params.minPrice}` : ""}${params.maxPrice ? `&maxPrice=${params.maxPrice}` : ""}${params.inStock ? `&inStock=${params.inStock}` : ""}${params.onSale ? `&onSale=${params.onSale}` : ""}`}
+                    className={`rounded-lg border px-4 py-2 font-medium transition-colors ${
+                      pageNum === page
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white hover:bg-primary/10 hover:border-primary/50"
+                    }`}
                   >
                     {pageNum}
                   </a>

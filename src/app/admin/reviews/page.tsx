@@ -5,9 +5,9 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { prisma } from "@/lib/prisma";
+} from "@/shared/ui/molecules/card";
+import { Badge } from "@/shared/ui/atoms/badge";
+import { prisma } from "@/shared/lib/prisma";
 
 export default async function AdminReviewsPage() {
   const reviews = await prisma.review.findMany({

@@ -9,8 +9,8 @@ import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Resend from "next-auth/providers/resend";
 import type { Provider } from "next-auth/providers";
-import { prisma } from "@/lib/prisma";
-import { verifyPassword } from "@/lib/password";
+import { prisma } from "@/shared/lib/prisma";
+import { verifyPassword } from "@/shared/lib/password";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {

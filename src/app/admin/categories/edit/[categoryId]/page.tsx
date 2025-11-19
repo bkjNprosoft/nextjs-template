@@ -6,10 +6,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { CategoryForm } from "@/components/admin/category-form";
-import { getCategories } from "@/server/data/categories";
-import { prisma } from "@/lib/prisma";
+} from "@/shared/ui/molecules/card";
+import { CategoryForm } from "@/entities/category/ui/category-form";
+import { getCategories } from "@/entities/category/api/data";
+import { prisma } from "@/shared/lib/prisma";
 
 type EditCategoryPageProps = {
   params: Promise<{

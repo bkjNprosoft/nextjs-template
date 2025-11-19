@@ -5,12 +5,20 @@ React 19(App Router) + Prisma + NextAuth.js + shadcn/ui 기반으로 제작된 �
 ## 빠른 시작
 
 ```bash
+# 1. 의존성 설치
 pnpm install
-cp env.example .env
 
-# DATABASE_URL 수정 후 생성
+# 2. 환경 변수 설정
+cp env.example .env
+# DATABASE_URL 등 필요한 값 수정
+
+# 3. 데이터베이스 마이그레이션
 pnpm db:migrate
 
+# 4. 테스트 데이터 생성 (선택사항)
+pnpm create-test-data
+
+# 5. 개발 서버 실행
 pnpm dev
 ```
 
@@ -44,6 +52,7 @@ pnpm dev
 | `pnpm db:migrate` | 데이터베이스 마이그레이션 |
 | `pnpm db:push` | 스키마를 DB에 강제 반영 |
 | `pnpm db:studio` | Prisma Studio GUI |
+| `pnpm create-test-data` | 테스트 계정 및 상품 데이터 생성 |
 | `pnpm storybook` | Storybook 개발 서버 (`http://localhost:6006`) |
 | `pnpm storybook:build` | 정적 Storybook 빌드 |
 | `pnpm test` | Vitest 단위 테스트 |
@@ -55,7 +64,8 @@ pnpm dev
 - **홈페이지**: 인기 상품, 카테고리 목록
 - **상품 목록**: 필터, 검색, 정렬 기능
 - **상품 상세**: 이미지, 설명, 리뷰, 장바구니 추가
-- **카테고리**: 카테고리별 상품 목록
+- **카테고리 목록**: 모든 카테고리 브라우징 및 하위 카테고리 표시
+- **카테고리별 상품**: 특정 카테고리의 상품 목록 및 필터링
 - **검색**: 상품명 및 설명 검색
 
 ### 사용자 영역
@@ -92,6 +102,7 @@ app/
 ├─ (shop)/                    # 쇼핑 영역
 │  ├─ page.tsx               # 홈페이지
 │  ├─ products/              # 상품 목록/상세
+│  ├─ categories/            # 카테고리 목록
 │  ├─ categories/[slug]/     # 카테고리별 상품
 │  └─ search/                # 검색 결과
 ├─ (app)/                     # 사용자 영역
@@ -127,7 +138,35 @@ app/
 - **Playwright**: E2E 테스트
 - **Storybook**: UI 컴포넌트 문서화
 
-## 관리자 계정 생성
+## 테스트 데이터 생성
+
+프로젝트에는 테스트를 위한 계정과 상품을 쉽게 생성할 수 있는 스크립트가 포함되어 있습니다:
+
+```bash
+pnpm create-test-data
+```
+
+이 명령어는 다음을 생성합니다:
+
+**계정:**
+- 관리자 계정: `admin@test.com` / `password123` (ADMIN 권한)
+- 일반 유저 계정: `user@test.com` / `password123` (CUSTOMER 권한)
+
+**카테고리:**
+- 의류 (패션 의류 카테고리)
+- 전자제품 (전자제품 및 가전 카테고리)
+- 도서 (도서 및 출판물 카테고리)
+
+**상품:**
+- 청바지 (89,000원, 재고 100개) - 인기 상품
+- 면 티셔츠 (29,000원, 재고 150개)
+- 무선 이어폰 (159,000원, 재고 50개) - 인기 상품
+- 스마트폰 케이스 (19,000원, 재고 200개)
+- 프로그래밍 입문서 (25,000원, 재고 80개)
+
+### 수동으로 관리자 계정 생성하기
+
+테스트 스크립트를 사용하지 않는 경우:
 
 1. 일반 회원가입으로 계정 생성
 2. Prisma Studio 실행: `pnpm db:studio`

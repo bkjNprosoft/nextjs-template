@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { auth } from "@/lib/auth";
+import { auth } from "@/shared/lib/auth";
 
 import { SignUpForm } from "./sign-up-form";
 

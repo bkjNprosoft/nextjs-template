@@ -1,16 +1,16 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/molecules/card";
+import { Checkbox } from "@/shared/ui/atoms/checkbox";
+import { Label } from "@/shared/ui/atoms/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/molecules/select";
 import type { Category } from "@prisma/client";
 
 type ProductFilterClientProps = {

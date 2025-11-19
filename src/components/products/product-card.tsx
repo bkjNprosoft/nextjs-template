@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { AddToCartButton } from "@/components/cart/add-to-cart-button";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/shared/ui/atoms/badge";
+import { Card, CardContent, CardFooter } from "@/shared/ui/molecules/card";
+import { AddToCartButton } from "@/features/add-to-cart";
+import { cn } from "@/shared/lib/utils";
 import type { Product } from "@prisma/client";
 
 type ProductCardProps = {
@@ -26,9 +26,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
     product.compareAtPrice &&
     Number(product.compareAtPrice) > Number(product.price);
 
+  // SKU가 있으면 SKU를 사용하고, 없으면 ID를 사용
+  const productIdentifier = product.sku || product.id;
+
   return (
     <Card className={cn("group overflow-hidden", className)}>
-      <Link href={`/products/${product.slug}`}>
+      <Link href={`/products/${productIdentifier}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image
             src={imageUrl}
@@ -62,7 +65,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               {product.category.name}
             </Link>
           )}
-          <Link href={`/products/${product.slug}`}>
+          <Link href={`/products/${productIdentifier}`}>
             <h3 className="font-semibold leading-tight hover:underline">
               {product.name}
             </h3>

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { requireUser } from "@/server/auth";
 
 const createReviewSchema = z.object({
@@ -71,11 +71,12 @@ export async function createReviewAction(formData: FormData) {
 
     const product = await prisma.product.findUnique({
       where: { id: parsed.data.productId },
-      select: { slug: true },
+      select: { sku: true, id: true },
     });
 
     if (product) {
-      revalidatePath(`/products/${product.slug}`);
+      const productIdentifier = product.sku || product.id;
+      revalidatePath(`/products/${productIdentifier}`);
     }
 
     return {
@@ -143,11 +144,12 @@ export async function updateReviewAction(formData: FormData) {
 
     const product = await prisma.product.findUnique({
       where: { id: parsed.data.productId },
-      select: { slug: true },
+      select: { sku: true, id: true },
     });
 
     if (product) {
-      revalidatePath(`/products/${product.slug}`);
+      const productIdentifier = product.sku || product.id;
+      revalidatePath(`/products/${productIdentifier}`);
     }
 
     return {
@@ -208,11 +210,12 @@ export async function deleteReviewAction(formData: FormData) {
 
     const product = await prisma.product.findUnique({
       where: { id: parsed.data.productId },
-      select: { slug: true },
+      select: { sku: true, id: true },
     });
 
     if (product) {
-      revalidatePath(`/products/${product.slug}`);
+      const productIdentifier = product.sku || product.id;
+      revalidatePath(`/products/${productIdentifier}`);
     }
 
     return {

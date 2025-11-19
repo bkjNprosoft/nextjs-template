@@ -1,78 +1,72 @@
 import Link from "next/link";
+import { ShoppingBag, Sparkles } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { ProductList } from "@/components/products/product-list";
-import { getCategories } from "@/server/data/categories";
-import { getFeaturedProducts } from "@/server/data/products";
+import { Button } from "@/shared/ui/atoms/button";
+import { ProductList } from "@/widgets/product-list";
+import { RecentProducts } from "@/widgets/recent-products";
+import { getFeaturedProducts } from "@/entities/product/api/data";
+import { auth } from "@/shared/lib/auth";
+import { getWishlistProductIds } from "@/entities/wishlist/api/data";
 
 export default async function HomePage() {
-  const [featuredProducts, categories] = await Promise.all([
+  const session = await auth();
+  const [featuredProducts, wishlistIds] = await Promise.all([
     getFeaturedProducts(8),
-    getCategories(),
+    session?.user ? getWishlistProductIds(session.user.id) : Promise.resolve([]),
   ]);
 
   return (
-    <div className="container space-y-12 py-8">
+    <div className="space-y-16">
       {/* Hero Section */}
-      <section className="space-y-6 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-          최고의 쇼핑 경험을 만나보세요
-        </h1>
-        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-          다양한 카테고리의 고품질 상품을 한 곳에서 만나보세요
-        </p>
-        <div className="flex justify-center gap-4">
-          <Button asChild size="lg">
-            <Link href="/products">상품 둘러보기</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/categories">카테고리 보기</Link>
-          </Button>
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-primary/5 py-20">
+        <div className="container relative z-10">
+          <div className="mx-auto max-w-3xl space-y-8 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-2 text-sm font-medium shadow-sm">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>새로운 쇼핑 경험을 시작하세요</span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              최고의 쇼핑 경험을
+              <br />
+              <span className="text-primary">만나보세요</span>
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              다양한 카테고리의 고품질 상품을 한 곳에서 만나보세요
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button asChild size="lg" className="h-12 px-8 text-base">
+                <Link href="/products">
+                  <ShoppingBag className="mr-2 h-5 w-5" />
+                  상품 둘러보기
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Categories */}
-      {categories.length > 0 && (
-        <section className="space-y-4">
+      {/* Featured Products */}
+      {featuredProducts.length > 0 && (
+        <section className="container space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">카테고리</h2>
+            <div>
+              <h2 className="text-3xl font-bold">인기 상품</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                지금 가장 인기 있는 상품들을 만나보세요
+              </p>
+            </div>
             <Button variant="ghost" asChild>
-              <Link href="/categories">전체 보기</Link>
+              <Link href="/products?featured=true">전체 보기 →</Link>
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {categories.slice(0, 8).map((category) => (
-              <Link
-                key={category.id}
-                href={`/categories/${category.slug}`}
-                className="group rounded-lg border bg-card p-6 text-center transition-colors hover:bg-accent"
-              >
-                <h3 className="font-semibold group-hover:underline">
-                  {category.name}
-                </h3>
-                {category._count.products > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    {category._count.products}개 상품
-                  </p>
-                )}
-              </Link>
-            ))}
-          </div>
+          <ProductList products={featuredProducts} wishlistProductIds={wishlistIds} />
         </section>
       )}
 
-      {/* Featured Products */}
-      {featuredProducts.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">인기 상품</h2>
-            <Button variant="ghost" asChild>
-              <Link href="/products?featured=true">전체 보기</Link>
-            </Button>
-          </div>
-          <ProductList products={featuredProducts} />
-        </section>
-      )}
+      {/* Recent Products */}
+      <section className="container">
+        <RecentProducts />
+      </section>
     </div>
   );
 }

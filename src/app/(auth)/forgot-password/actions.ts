@@ -3,9 +3,9 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { prisma } from "@/lib/prisma";
-import { sendPasswordResetEmail } from "@/lib/mailer";
-import { issuePasswordResetToken } from "@/lib/password-reset";
+import { prisma } from "@/shared/lib/prisma";
+import { sendPasswordResetEmail } from "@/shared/lib/mailer";
+import { issuePasswordResetToken } from "@/shared/lib/password-reset";
 
 const requestSchema = z.object({
   email: z.string().trim().toLowerCase().email("올바른 이메일 형식이 아닙니다."),

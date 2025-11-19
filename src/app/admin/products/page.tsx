@@ -1,15 +1,15 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/ui/molecules/card";
+import { Badge } from "@/shared/ui/atoms/badge";
 import { Plus } from "lucide-react";
-import { getProducts } from "@/server/data/products";
+import { getProducts } from "@/entities/product/api/data";
 
 export default async function AdminProductsPage() {
   const { products } = await getProducts({ take: 50 });

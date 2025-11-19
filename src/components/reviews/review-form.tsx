@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Dialog,
   DialogContent,
@@ -12,11 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { createReviewAction } from "@/server/actions/reviews";
+} from "@/shared/ui/molecules/dialog";
+import { Input } from "@/shared/ui/atoms/input";
+import { Label } from "@/shared/ui/atoms/label";
+import { Textarea } from "@/shared/ui/atoms/textarea";
+import { createReviewAction } from "@/entities/review/api/actions";
 
 type ReviewFormProps = {
   productId: string;
@@ -28,7 +28,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     setError(null);
     startTransition(async () => {
       formData.append("productId", productId);
@@ -56,7 +56,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         <Button>리뷰 작성</Button>
       </DialogTrigger>
       <DialogContent>
-        <form action={handleSubmit}>
+        <form action={(formData) => { handleSubmit(formData); }}>
           <DialogHeader>
             <DialogTitle>리뷰 작성</DialogTitle>
             <DialogDescription>

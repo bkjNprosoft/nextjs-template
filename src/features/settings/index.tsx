@@ -1,0 +1,141 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+import { Button } from "@/shared/ui/atoms/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/ui/molecules/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/molecules/select";
+import { Switch } from "@/shared/ui/atoms/switch";
+import { updateUserPreferencesAction } from "@/entities/user/api/actions";
+import type { UserPreference, ThemePreference } from "@prisma/client";
+
+const settingsSchema = z.object({
+  theme: z.enum(["SYSTEM", "LIGHT", "DARK"]),
+  emailNotifications: z.boolean(),
+});
+
+type SettingsFormProps = {
+  preferences: UserPreference | null;
+};
+
+export function SettingsForm({ preferences }: SettingsFormProps) {
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const form = useForm<z.infer<typeof settingsSchema>>({
+    resolver: zodResolver(settingsSchema),
+    defaultValues: {
+      theme: (preferences?.theme as ThemePreference) ?? "SYSTEM",
+      emailNotifications: preferences?.emailNotifications ?? true,
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof settingsSchema>) => {
+    setError(null);
+    setSuccess(false);
+
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append("theme", values.theme);
+      formData.append("emailNotifications", values.emailNotifications.toString());
+
+      const result = await updateUserPreferencesAction(formData);
+
+      if (result.success) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        const errorMessage =
+          (result.errors as { _general?: string[] })._general?.[0] ||
+          "설정 업데이트에 실패했습니다.";
+        setError(errorMessage);
+      }
+    });
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit(onSubmit)(e); }} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="theme"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>테마</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="테마를 선택하세요" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="SYSTEM">시스템 기본값</SelectItem>
+                  <SelectItem value="LIGHT">라이트</SelectItem>
+                  <SelectItem value="DARK">다크</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                애플리케이션의 색상 테마를 선택하세요.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="emailNotifications"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">이메일 알림</FormLabel>
+                <FormDescription>
+                  이메일 알림을 받으시겠습니까?
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        {error && (
+          <p className="text-sm text-destructive">{error}</p>
+        )}
+        {success && (
+          <p className="text-sm text-green-600">설정이 저장되었습니다.</p>
+        )}
+
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "저장 중..." : "저장"}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+

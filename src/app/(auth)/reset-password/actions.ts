@@ -3,9 +3,9 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { prisma } from "@/lib/prisma";
-import { consumePasswordResetToken, validatePasswordResetToken } from "@/lib/password-reset";
-import { hashPassword } from "@/lib/password";
+import { prisma } from "@/shared/lib/prisma";
+import { consumePasswordResetToken, validatePasswordResetToken } from "@/shared/lib/password-reset";
+import { hashPassword } from "@/shared/lib/password";
 
 const resetSchema = z
   .object({

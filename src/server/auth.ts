@@ -2,7 +2,7 @@ import "server-only";
 
 import { UserRole } from "@prisma/client";
 
-import { auth } from "@/lib/auth";
+import { auth } from "@/shared/lib/auth";
 
 const ROLE_PRIORITY: Record<UserRole, number> = {
   [UserRole.CUSTOMER]: 1,

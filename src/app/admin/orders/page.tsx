@@ -1,14 +1,15 @@
 import Link from "next/link";
+import { OrderStatus } from "@prisma/client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/shared/ui/atoms/badge";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
+} from "@/shared/ui/molecules/card";
+import { prisma } from "@/shared/lib/prisma";
 
 const statusLabels: Record<string, string> = {
   PENDING: "대기 중",
@@ -30,10 +31,12 @@ export default async function AdminOrdersPage({
   searchParams,
 }: OrdersPageProps) {
   const params = await searchParams;
-  const status = params.status as string | undefined;
+  const status = params.status;
 
   const orders = await prisma.order.findMany({
-    where: status ? { status: status as any } : undefined,
+    where: status && Object.values(OrderStatus).includes(status as OrderStatus)
+      ? { status: status as OrderStatus }
+      : undefined,
     include: {
       user: {
         select: {

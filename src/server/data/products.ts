@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { Prisma } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 
 export const getProducts = cache(
   async (options?: {

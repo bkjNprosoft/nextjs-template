@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/shared/ui/molecules/card";
 import { getAdminStats } from "@/server/data/admin";
 
 export default async function AdminDashboardPage() {

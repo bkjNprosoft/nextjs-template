@@ -6,10 +6,10 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { ProductForm } from "@/components/admin/product-form";
-import { getProductById } from "@/server/data/products";
-import { getCategories } from "@/server/data/categories";
+} from "@/shared/ui/molecules/card";
+import { ProductForm } from "@/entities/product/ui/product-form";
+import { getProductById } from "@/entities/product/api/data";
+import { getCategories } from "@/entities/category/api/data";
 
 type EditProductPageProps = {
   params: Promise<{

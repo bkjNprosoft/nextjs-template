@@ -4,9 +4,9 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { signIn } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/password";
+import { signIn } from "@/shared/lib/auth";
+import { prisma } from "@/shared/lib/prisma";
+import { hashPassword } from "@/shared/lib/password";
 
 const signUpSchema = z
   .object({

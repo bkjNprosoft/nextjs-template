@@ -3,9 +3,9 @@
 import { useState, useTransition } from "react";
 import { ShoppingCart } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { addToCartAction } from "@/server/actions/cart";
-import { cn } from "@/lib/utils";
+import { Button } from "@/shared/ui/atoms/button";
+import { addToCartAction } from "@/features/add-to-cart/api";
+import { cn } from "@/shared/lib/utils";
 
 type AddToCartButtonProps = {
   productId: string;

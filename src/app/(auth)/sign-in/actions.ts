@@ -1,10 +1,12 @@
 "use server";
 
+import { UserRole } from "@prisma/client";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { signIn } from "@/lib/auth";
+import { signIn } from "@/shared/lib/auth";
+import { prisma } from "@/shared/lib/prisma";
 
 const signInSchema = z.object({
   email: z.string().trim().toLowerCase().email("올바른 이메일 형식이 아닙니다."),
@@ -24,10 +26,20 @@ export async function signInWithCredentials(formData: FormData) {
     redirect(`/sign-in?error=${encodeURIComponent(message)}`);
   }
 
+  // 로그인 전에 사용자 역할 확인
+  const user = await prisma.user.findUnique({
+    where: { email: parsed.data.email },
+    select: { role: true },
+  });
+
+  // 역할에 따라 리다이렉트 경로 결정
+  const redirectTo =
+    user?.role === UserRole.ADMIN ? "/admin/dashboard" : "/dashboard";
+
   try {
     await signIn("credentials", {
       ...parsed.data,
-      redirectTo: "/dashboard",
+      redirectTo,
     });
   } catch (error) {
     if (error instanceof AuthError) {

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { auth, signOut } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { AdminSidebar } from "@/components/navigation/admin-sidebar";
+import { auth, signOut } from "@/shared/lib/auth";
+import { Button } from "@/shared/ui/atoms/button";
+import { AdminSidebar } from "@/widgets/admin-sidebar";
 import { requireRole } from "@/server/auth";
 
 type AdminLayoutProps = {

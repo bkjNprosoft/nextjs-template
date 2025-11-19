@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ShoppingCart, User, Menu } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { auth } from "@/lib/auth";
-import { getCart } from "@/server/data/cart";
-import { getCategories } from "@/server/data/categories";
+import { Button } from "@/shared/ui/atoms/button";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/shared/ui/molecules/sheet";
+import { auth } from "@/shared/lib/auth";
+import { getCart } from "@/entities/cart/api/data";
+import { getCategories } from "@/entities/category/api/data";
 
 export async function MainNav() {
   const session = await auth();
@@ -57,6 +57,7 @@ export async function MainNav() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
+                  <SheetTitle className="sr-only">카테고리</SheetTitle>
                   <div className="space-y-4">
                     <h2 className="text-lg font-semibold">카테고리</h2>
                     <nav className="space-y-2">
@@ -120,6 +121,7 @@ export async function MainNav() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
+              <SheetTitle className="sr-only">메뉴</SheetTitle>
               <nav className="space-y-4">
                 <Link
                   href="/products"

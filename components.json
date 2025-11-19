@@ -13,10 +13,14 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
+    "utils": "@/shared/lib/utils",
+    "ui": "@/shared/ui",
+    "lib": "@/shared/lib",
+    "hooks": "@/hooks",
+    "shared": "@/shared",
+    "entities": "@/entities",
+    "features": "@/features",
+    "widgets": "@/widgets"
   },
   "registries": {}
 }

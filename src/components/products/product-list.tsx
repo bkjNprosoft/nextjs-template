@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/products/product-card";
+import { ProductCard } from "@/entities/product/ui/product-card";
 import type { Product } from "@prisma/client";
 
 type ProductListProps = {

@@ -1,20 +1,20 @@
 import { ThemePreference } from "@prisma/client";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { auth } from "@/lib/auth";
-import { updateUserPreferencesAction } from "@/server/actions/notifications";
-import { getUserPreferences } from "@/server/data/notifications";
+} from "@/shared/ui/molecules/card";
+import { Input } from "@/shared/ui/atoms/input";
+import { Label } from "@/shared/ui/atoms/label";
+import { Separator } from "@/shared/ui/atoms/separator";
+import { auth } from "@/shared/lib/auth";
+import { updateUserPreferencesAction } from "@/entities/user/api/actions";
+import { getUserPreferences } from "@/entities/user/api/data";
 
 const THEME_OPTIONS = [
   { value: ThemePreference.SYSTEM, label: "시스템 기본값" },

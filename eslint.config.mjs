@@ -52,6 +52,7 @@ const eslintConfig = defineConfig([
       },
     },
     plugins: {
+      "@typescript-eslint": tseslint.plugin,
       "@next/next": nextPlugin,
       react: reactPlugin,
       "react-hooks": reactHooksPlugin,
@@ -63,6 +64,14 @@ const eslintConfig = defineConfig([
       ...reactPlugin.configs["jsx-runtime"].rules,
       ...reactHooksPlugin.configs.recommended.rules,
       "no-console": ["warn", { allow: ["warn", "error"] }],
+      // TypeScript 타입 안전성 규칙
+      "@typescript-eslint/no-explicit-any": "error",
+      // unsafe-assignment는 any 타입뿐만 아니라 error 타입의 unsafe assignment도 감지합니다
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
     },
     settings: {
       next: {

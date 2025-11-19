@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/atoms/avatar";
+import { Separator } from "@/shared/ui/atoms/separator";
 import type { Review } from "@prisma/client";
 
 type ReviewListProps = {

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Card,
   CardContent,
@@ -12,9 +12,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/shared/ui/molecules/card";
+import { Input } from "@/shared/ui/atoms/input";
+import { Label } from "@/shared/ui/atoms/label";
 
 import { registerUser } from "./actions";
 
@@ -35,7 +35,7 @@ export function SignUpForm({ initialError, initialInfo }: SignUpFormProps) {
     confirmPassword: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setInfo(null);
@@ -66,88 +66,95 @@ export function SignUpForm({ initialError, initialInfo }: SignUpFormProps) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-6 py-12">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-2 text-center">
-          <CardTitle className="text-2xl font-semibold">회원가입</CardTitle>
-          <CardDescription>
-            몇 가지 정보만 입력하면 협업 대시보드를 바로 시작할 수 있어요.
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-background to-primary/5 px-6 py-12">
+      <Card className="w-full max-w-md border-0 shadow-xl">
+        <CardHeader className="space-y-3 border-b bg-muted/30 text-center pb-6">
+          <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <span className="text-2xl font-bold text-primary">쇼핑몰</span>
+          </div>
+          <CardTitle className="text-3xl font-bold">회원가입</CardTitle>
+          <CardDescription className="text-base">
+            몇 가지 정보만 입력하면 쇼핑을 시작할 수 있어요
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5">
+        <CardContent className="space-y-6 pt-6">
           {error ? (
-            <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <div className="rounded-lg border-2 border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {error}
-            </p>
+            </div>
           ) : null}
           {info ? (
-            <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary">
+            <div className="rounded-lg border-2 border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
               {info}
-            </p>
+            </div>
           ) : null}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2 text-left">
-              <Label htmlFor="name">이름</Label>
+          <form onSubmit={(e) => { handleSubmit(e); }} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-semibold">이름</Label>
               <Input
                 id="name"
                 name="name"
                 autoComplete="name"
                 placeholder="홍길동"
+                className="h-12"
                 value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="email">이메일</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-semibold">이메일</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
                 placeholder="you@example.com"
+                className="h-12"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="password">비밀번호</Label>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-semibold">비밀번호</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
                 placeholder="비밀번호 (영문+숫자 8자 이상)"
+                className="h-12"
                 value={formData.password}
                 onChange={handleChange}
                 required
               />
             </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="confirmPassword">비밀번호 확인</Label>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-semibold">비밀번호 확인</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
                 autoComplete="new-password"
                 placeholder="비밀번호를 다시 입력하세요"
+                className="h-12"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isPending}>
               {isPending ? "처리 중..." : "계정 생성하기"}
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-2 text-center">
+        <CardFooter className="flex flex-col space-y-2 border-t bg-muted/30 text-center pt-6">
           <p className="text-sm text-muted-foreground">
             이미 계정이 있으신가요?{" "}
             <Link
               href="/sign-in"
-              className="text-primary underline-offset-4 hover:underline"
+              className="font-semibold text-primary underline-offset-4 hover:underline"
             >
               로그인하기
             </Link>

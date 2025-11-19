@@ -1,16 +1,16 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/atoms/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { OrderStatusForm } from "@/components/admin/order-status-form";
-import { getOrderById } from "@/server/data/orders";
+} from "@/shared/ui/molecules/card";
+import { Separator } from "@/shared/ui/atoms/separator";
+import { OrderStatusForm } from "@/entities/order/ui/order-status-form";
+import { getOrderById } from "@/entities/order/api/data";
 
 const statusLabels: Record<string, string> = {
   PENDING: "대기 중",

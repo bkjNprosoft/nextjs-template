@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { Edit, Trash2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/shared/ui/atoms/badge";
+import { Button } from "@/shared/ui/atoms/button";
 import {
   Dialog,
   DialogContent,
@@ -13,15 +13,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+} from "@/shared/ui/molecules/dialog";
+import { Input } from "@/shared/ui/atoms/input";
+import { Label } from "@/shared/ui/atoms/label";
+import { Checkbox } from "@/shared/ui/atoms/checkbox";
+import { Separator } from "@/shared/ui/atoms/separator";
 import {
   updateAddressAction,
   deleteAddressAction,
-} from "@/server/actions/addresses";
+} from "@/entities/address/api/actions";
 import type { Address } from "@prisma/client";
 
 type AddressListProps = {

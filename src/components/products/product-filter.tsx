@@ -1,5 +1,5 @@
-import { ProductFilterClient } from "@/components/products/product-filter-client";
-import { getCategories } from "@/server/data/categories";
+import { ProductFilterClient } from "@/entities/product/ui/product-filter-client";
+import { getCategories } from "@/entities/category/api/data";
 
 export async function ProductFilter() {
   const categories = await getCategories();

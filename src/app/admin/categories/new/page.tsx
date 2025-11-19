@@ -4,9 +4,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { CategoryForm } from "@/components/admin/category-form";
-import { getCategories } from "@/server/data/categories";
+} from "@/shared/ui/molecules/card";
+import { CategoryForm } from "@/entities/category/ui/category-form";
+import { getCategories } from "@/entities/category/api/data";
 
 export default async function NewCategoryPage() {
   const categories = await getCategories();

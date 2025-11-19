@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { getDefaultAddress, getAddresses } from "@/server/data/addresses";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/molecules/card";
+import { Separator } from "@/shared/ui/atoms/separator";
+import { getDefaultAddress, getAddresses } from "@/entities/address/api/data";
 import { requireUser } from "@/server/auth";
-import { CheckoutButton } from "@/components/orders/checkout-button";
+import { CheckoutButton } from "@/features/checkout";
 
 type CartSummaryProps = {
   total: number;

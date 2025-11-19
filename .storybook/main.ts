@@ -10,7 +10,7 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ["../public"],
-  viteFinal: async (config) => {
+  viteFinal: (config) => {
     config.resolve ??= {};
     config.resolve.alias ??= {};
     config.resolve.alias["@"] = path.resolve(__dirname, "../src");
